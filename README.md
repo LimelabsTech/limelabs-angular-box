@@ -1,3 +1,13 @@
+This is a form from Quintor:
+
+I've added:
+- SCSS instead of CSS
+- Upgraded the typescript as I love async/await
+- Added bootstrap 3
+- Added Axios
+
+Everything below is the same as in Quintors Box
+
 # Truffle Box for Angular
 
 This Truffle Box provides a base for working with the Truffle Framework and Angular.
