@@ -1,4 +1,4 @@
-This is a form from Quintor:
+This is a fork from Quintor:
 
 I've added:
 - SCSS instead of CSS
