@@ -1,4 +1,4 @@
-This is a form from Quintor:
+This is a fork from Quintor:
 
 I've added:
 - SCSS instead of CSS
@@ -25,7 +25,7 @@ This project is generated with [Angular CLI](https://cli.angular.io/).
 
 2. Download the box.
   ```bash
-  truffle unbox Quintor/angular-truffle-box
+  truffle unbox LimelabsTech/angular-truffle-box
   ```
 
 3. Run your Ethereum client. For TestRPC:
