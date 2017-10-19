@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 
-
-
 import { Web3Service } from "../../util/web3.service";
 
 @Component({
@@ -15,7 +13,7 @@ export class MetaSenderComponent implements OnInit {
   }
 
   accounts: string[];
-  MetaCoin: any;
+  metaCoinInstance: any;
 
   model = {
     amount: 5,
@@ -26,16 +24,19 @@ export class MetaSenderComponent implements OnInit {
 
   status = "";
 
-  ngOnInit(): void {
-    this.MetaCoin = this.web3Service.MetaCoin;
+  async ngOnInit() {
     this.watchAccount();
+    this.metaCoinInstance = await this.web3Service.MetaCoin.deployed();
+    this.refreshBalance();
   }
 
   watchAccount() {
-    this.web3Service.accountsObservable.subscribe((accounts) => {
-      this.accounts = accounts;
-      this.model.account = accounts[0];
-      this.refreshBalance();
+    this.web3Service.accountsObservable.subscribe({
+      next: (accounts) => {
+        this.accounts = accounts;
+        this.model.account = accounts[0];
+        console.log(this.model.account);
+      }
     });
   }
 
@@ -44,8 +45,8 @@ export class MetaSenderComponent implements OnInit {
   };
 
   sendCoin() {
-    if (!this.MetaCoin) {
-      this.setStatus("Metacoin is not loaded, unable to send transaction");
+    if (!this.metaCoinInstance) {
+      this.setStatus("metaCoinInstance is not loaded, unable to send transaction");
       return;
     }
 
@@ -57,10 +58,10 @@ export class MetaSenderComponent implements OnInit {
 
     this.setStatus("Initiating transaction... (please wait)");
 
-    this.MetaCoin.then((contract) => {
+    this.metaCoinInstance.then((contract) => {
       return contract.deployed();
-    }).then((metaCoinInstance) => {
-      return metaCoinInstance.sendCoin.sendTransaction(receiver, amount, { from: this.model.account });
+    }).then((metaCoinInstanceInstance) => {
+      return metaCoinInstanceInstance.sendCoin.sendTransaction(receiver, amount, { from: this.model.account });
     }).then((success) => {
       if (!success) {
         this.setStatus("Transaction failed!");
@@ -78,9 +79,8 @@ export class MetaSenderComponent implements OnInit {
   refreshBalance() {
     console.log("Refreshing balance");
 
-    this.MetaCoin.deployed((metaCoinInstance) => {
-      return metaCoinInstance.getBalance.call(this.model.account);
-    }).then((value) => {
+
+    this.metaCoinInstance.getBalance.call(this.model.account).then((value) => {
       console.log("Found balance: ", value);
       this.model.balance = value.valueOf();
     }).catch(function (e) {
