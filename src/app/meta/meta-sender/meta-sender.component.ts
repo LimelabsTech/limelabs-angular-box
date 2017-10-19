@@ -64,6 +64,7 @@ export class MetaSenderComponent implements OnInit {
       }
       else {
         this.setStatus("Transaction complete!");
+        this.refreshBalance();
       }
     }).catch((e) => {
       console.log(e);
