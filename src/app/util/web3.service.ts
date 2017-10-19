@@ -1,8 +1,8 @@
 import { Injectable, OnInit, Output, EventEmitter } from '@angular/core';
 import { default as Web3 } from 'web3';
-import { WindowRefService } from './window-ref.service';
-
 import { default as contract } from 'truffle-contract';
+
+import { WindowRefService } from './window-ref.service';
 import metacoin_artifacts from '../../../build/contracts/MetaCoin.json';
 import { Subject } from 'rxjs/Subject';
 
@@ -11,40 +11,30 @@ export class Web3Service {
 
   private web3: Web3;
   private accounts: string[];
-  public ready = false;
   public MetaCoin: any;
 
   public accountsObservable = new Subject<string[]>();
 
   constructor(private windowRef: WindowRefService) {
-    this.MetaCoin = contract(metacoin_artifacts);
-    this.checkAndRefreshWeb3();
-    setInterval(() => this.checkAndRefreshWeb3(), 100);
+    this.setupMetacoinContract();
+    this.refreshAccounts();
   }
 
-  private checkAndRefreshWeb3() {
-    if (this.ready) {
-      this.refreshAccounts();
-      return;
+  private setupMetamaskWeb3() {
+    if (!this.windowRef.nativeWindow) {
+      throw new Error('Can not get the window');
     }
+    if (!this.windowRef.nativeWindow.web3) {
+      throw new Error('Not a metamask browser');
+    }
+    this.web3 = new Web3(this.windowRef.nativeWindow.web3.currentProvider);
+  }
 
-    if (this.windowRef.nativeWindow) {
-      if (this.windowRef.nativeWindow.web3) {
-        console.log('Using provided web3 implementation');
-        this.web3 = new Web3(this.windowRef.nativeWindow.web3.currentProvider);
-        // Bootstrap the MetaCoin abstraction for Use.
-        this.MetaCoin.setProvider(this.web3.currentProvider);
-
-        this.refreshAccounts();
-      }
-      else {
-        console.log(`Not finding web3`);
-      }
-    }
-    else {
-      console.log(`Can't get window reference`);
-    }
-  };
+  private setupMetacoinContract() {
+    this.setupMetamaskWeb3();
+    this.MetaCoin = contract(metacoin_artifacts);
+    this.MetaCoin.setProvider(this.web3.currentProvider);
+  }
 
   private refreshAccounts() {
     this.web3.eth.getAccounts((err, accs) => {
@@ -64,8 +54,6 @@ export class Web3Service {
         this.accountsObservable.next(accs);
         this.accounts = accs;
       }
-
-      this.ready = true;
     });
   }
 }
