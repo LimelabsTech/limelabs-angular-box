@@ -58,11 +58,7 @@ export class MetaSenderComponent implements OnInit {
 
     this.setStatus("Initiating transaction... (please wait)");
 
-    this.metaCoinInstance.then((contract) => {
-      return contract.deployed();
-    }).then((metaCoinInstanceInstance) => {
-      return metaCoinInstanceInstance.sendCoin.sendTransaction(receiver, amount, { from: this.model.account });
-    }).then((success) => {
+    this.metaCoinInstance.sendCoin(receiver, amount, { from: this.model.account }).then((success) => {
       if (!success) {
         this.setStatus("Transaction failed!");
       }
