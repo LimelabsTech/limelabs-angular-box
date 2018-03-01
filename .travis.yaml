@@ -1,0 +1,17 @@
+language: node_js
+
+sudo: required
+
+services:
+  - docker
+
+# safelist
+branches:
+  only:
+  - master
+  - /^stable.*$/
+
+install: true
+
+script:
+- docker ps -a
