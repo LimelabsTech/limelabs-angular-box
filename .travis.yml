@@ -10,8 +10,8 @@ branches:
   only:
   - master
   - /^stable.*$/
+  - /^sprint-.*$/
 
 install: true
 
-script:
-- docker ps -a
+script: .travis/build.sh
